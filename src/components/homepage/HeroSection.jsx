@@ -133,6 +133,7 @@ function AnimatedScore({ value, isTransitioning }) {
 
     function animate(timestamp) {
       if (!start) start = timestamp;
+
       const progress = Math.min((timestamp - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
 
@@ -145,8 +146,11 @@ function AnimatedScore({ value, isTransitioning }) {
     }
 
     frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
-  }, [numericValue]);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [numericValue, displayValue]);
 
   return (
     <div

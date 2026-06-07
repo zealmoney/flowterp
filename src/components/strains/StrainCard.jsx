@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import FeedbackButtons from "../recommendations/FeedbackButtons";
-import { getGridStrainImage } from "../../utils/strainImages";
 
 export default function StrainCard({
   strain,

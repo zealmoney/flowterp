@@ -41,15 +41,6 @@ export default function ChatAssistantPanel({
 
   const endRef = useRef(null);
 
-  const suggestions = useMemo(() => {
-    return [
-      "Make this more relaxing",
-      "Show something more energizing",
-      "Broaden the results",
-      "Use my usual taste",
-    ];
-  }, []);
-
   const nextSuggestions = useMemo(() => {
     return buildNextStepSuggestions(filters);
   }, [filters]);
@@ -66,34 +57,29 @@ export default function ChatAssistantPanel({
     const parsed = parseAssistantIntent(text, filters, flowMemory);
 
     setMessages((prev) => [
-        ...prev,
-        { role: "user", text },
-        {
-            role: "assistant",
-            text: parsed.action
-            ? `${parsed.reply} Got it — updating your flow now.`
-            : parsed.reply,
-        },
+      ...prev,
+      { role: "user", text },
+      {
+        role: "assistant",
+        text: parsed.action
+          ? `${parsed.reply} Updating your flow now...`
+          : parsed.reply,
+      },
     ]);
 
     if (parsed.action) {
-        setMessages((prev) => [
-            ...prev,
-            { role: "assistant", text: "Got it — updating your flow..." },
-        ]);
+      pendingActionRef.current = {
+        beforeCount: resultCount,
+        beforeTop: topRecommendation,
+      };
 
-        pendingActionRef.current = {
-            beforeCount: resultCount,
-            beforeTop: topRecommendation,
-        };
+      const actionResult = handleAction(parsed.action);
 
-        const actionResult = handleAction(parsed.action);
-
-        pendingActionRef.current = {
-            ...pendingActionRef.current,
-            actionResult,
-    };
-}
+      pendingActionRef.current = {
+        ...pendingActionRef.current,
+        actionResult,
+      };
+    }
 
     setInput("");
   }

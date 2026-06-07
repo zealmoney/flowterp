@@ -68,16 +68,6 @@ export function parseAssistantIntent(input, currentFilters = {}, memory = null) 
     };
   }
 
-  if (containsAny(text, ["remove terpene", "without terpene", "clear terpene"])) {
-    return {
-      reply: "I’ll remove the terpene restriction and keep the rest of your flow intact.",
-      action: {
-        type: "apply_filter",
-        payload: { key: "terpene", value: "" },
-      },
-    };
-  }
-
   if (containsAny(text, ["my usual taste", "based on my taste", "my preferences", "what i usually like"])) {
     const preferredState = memory?.top_states?.[0];
     if (preferredState) {
@@ -105,12 +95,7 @@ export function parseAssistantIntent(input, currentFilters = {}, memory = null) 
     };
   }
 
-  return {
-    reply: "I can help refine this by making it more energizing, more relaxing, broader, stronger, milder, or closer to your usual taste.",
-    action: null,
-  };
-
-  if (containsAny(text, ["remove terpene filter", "remove terpene"])) {
+  if (containsAny(text, ["remove terpene filter", "remove terpene", "without terpene", "clear terpene"])) {
     return {
       reply: "I’ll remove the terpene filter and keep the rest of your setup intact.",
       action: {
@@ -129,4 +114,10 @@ export function parseAssistantIntent(input, currentFilters = {}, memory = null) 
       },
     };
   }
+
+  return {
+    reply: "I can help refine this by making it more energizing, more relaxing, broader, stronger, milder, or closer to your usual taste.",
+    action: null,
+  };
 }
+ 

@@ -35,18 +35,7 @@ export function useRecommendations(filters) {
 
   const params = useMemo(() => {
     return buildRecommendationParams(filters);
-  }, [
-    filters.state,
-    filters.effect,
-    filters.terpene,
-    filters.time_of_day,
-    filters.strain_type,
-    filters.featured,
-    filters.min_thc,
-    filters.max_thc,
-    filters.mode,
-    filters.page,
-  ]);
+  }, [filters]);
 
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
@@ -90,7 +79,7 @@ export function useRecommendations(filters) {
     return () => {
       isCancelled = true;
     };
-  }, [filters.state, params, refreshKey]);
+  }, [filters, params, refreshKey]);
 
   return { data, loading, error, refetch };
 }
