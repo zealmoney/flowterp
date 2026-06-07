@@ -130,7 +130,7 @@ export function useFeedback(filters, enabled = true) {
         setLoadingMap((prev) => ({ ...prev, [signature]: false }));
       }
     },
-    [feedbackMap]
+    []
   );
 
   function getFeedbackForStrain(strainId, currentFilters) {
