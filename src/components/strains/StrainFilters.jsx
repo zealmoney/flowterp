@@ -91,6 +91,24 @@ export default function StrainFilters({
 
       <div>
         <label className="mb-2 block text-sm font-medium text-zinc-300">
+          Time of Day
+        </label>
+        <select
+          value={filters.time_of_day}
+          onChange={(e) => onFilterChange("time_of_day", e.target.value)}
+          className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
+        >
+          <option value="">Any time</option>
+          {metadata.time_of_day_options.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="mb-2 block text-sm font-medium text-zinc-300">
           Sort By
         </label>
         <select

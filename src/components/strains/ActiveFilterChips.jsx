@@ -55,6 +55,17 @@ export default function ActiveFilterChips({
     });
   }
 
+  if (filters.time_of_day) {
+    const timeOfDay = metadata?.time_of_day_options?.find(
+      (item) => item.value === filters.time_of_day
+    );
+
+    chips.push({
+      key: "time_of_day",
+      label: `Time: ${timeOfDay?.label || filters.time_of_day}`,
+    });
+  }
+
   if (filters.ordering && filters.ordering !== "name") {
     const orderingMap = {
       "-name": "Name: Z–A",

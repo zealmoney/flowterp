@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ActiveFilterChips from "../components/strains/ActiveFilterChips";
+import FeaturedStateQuickFilters from "../components/strains/FeaturedStateQuickFilters";
 import MobileFilterDrawer from "../components/strains/MobileFilterDrawer";
 import PaginationControls from "../components/strains/PaginationControls";
+import ResultsSummaryBar from "../components/strains/ResultsSummaryBar";
+import SelectedStateBanner from "../components/strains/SelectedStateBanner";
 import StrainFilters from "../components/strains/StrainFilters";
 import StrainGrid from "../components/strains/StrainGrid";
 import StrainsPageSkeleton from "../components/strains/StrainsPageSkeleton";
@@ -10,8 +13,6 @@ import StrainSearchBar from "../components/strains/StrainSearchBar";
 import { useDebounce } from "../hooks/useDebounce";
 import { useFilterMetadata } from "../hooks/useFilterMetadata";
 import { useStrains } from "../hooks/useStrains";
-import ResultsSummaryBar from "../components/strains/ResultsSummaryBar";
-import FeaturedStateQuickFilters from "../components/strains/FeaturedStateQuickFilters";
 
 const defaultFilters = {
   search: "",
@@ -19,6 +20,7 @@ const defaultFilters = {
   state: "",
   effect: "",
   terpene: "",
+  time_of_day: "",
   ordering: "name",
   page: 1,
 };
@@ -30,6 +32,7 @@ function getFiltersFromSearchParams(searchParams) {
     state: searchParams.get("state") || "",
     effect: searchParams.get("effect") || "",
     terpene: searchParams.get("terpene") || "",
+    time_of_day: searchParams.get("time_of_day") || "",
     ordering: searchParams.get("ordering") || "name",
     page: Number(searchParams.get("page") || 1),
   };
@@ -43,6 +46,7 @@ function buildSearchParams(filters) {
   if (filters.state) params.state = filters.state;
   if (filters.effect) params.effect = filters.effect;
   if (filters.terpene) params.terpene = filters.terpene;
+  if (filters.time_of_day) params.time_of_day = filters.time_of_day;
   if (filters.ordering && filters.ordering !== "name") params.ordering = filters.ordering;
   if (filters.page && filters.page !== 1) params.page = String(filters.page);
 
@@ -82,22 +86,9 @@ export default function StrainsPage() {
   }, [searchParams]);
 
   useEffect(() => {
-    const params = buildSearchParams({
-      ...filters,
-      search: debouncedSearch.trim(),
-    });
-
+    const params = buildSearchParams(queryFilters);
     setSearchParams(params, { replace: true });
-  }, [
-    filters.strain_type,
-    filters.state,
-    filters.effect,
-    filters.terpene,
-    filters.ordering,
-    filters.page,
-    debouncedSearch,
-    setSearchParams,
-  ]);
+  }, [queryFilters, setSearchParams]);
 
   function handleFilterChange(key, value) {
     setFilters((prev) => ({
@@ -134,23 +125,27 @@ export default function StrainsPage() {
     }));
   }
 
-  if (metadataLoading && loading) {
-    return <StrainsPageSkeleton />;
-  }
-
   const hasActiveFilters =
     Boolean(filters.search) ||
     Boolean(filters.strain_type) ||
     Boolean(filters.state) ||
     Boolean(filters.effect) ||
     Boolean(filters.terpene) ||
+    Boolean(filters.time_of_day) ||
     (filters.ordering && filters.ordering !== "name");
 
   const featuredQuickStates = (metadata?.states || []).filter((state) =>
-  ["deep-focus", "creative-flow", "cinematic-review", "energy-boost"].includes(
-    state.slug
-  )
-);
+    ["deep-focus", "creative-flow", "cinematic-review", "idea-generation"].includes(
+      state.slug
+    )
+  );
+
+  const selectedState =
+    metadata?.states?.find((item) => item.slug === filters.state) || null;
+
+  if (metadataLoading && loading) {
+    return <StrainsPageSkeleton />;
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
@@ -163,10 +158,17 @@ export default function StrainsPage() {
         </h1>
         <p className="mt-3 max-w-3xl text-zinc-400">
           Search and filter strains by creative state, effect, terpene profile,
-          and type to find the right fit for coding, music production, editing,
-          writing, or deep focus.
+          time of day, and type to find the right fit for coding, music production,
+          editing, writing, or deep focus.
         </p>
       </div>
+
+      {!metadataLoading && !metadataError && selectedState ? (
+        <SelectedStateBanner
+          state={selectedState}
+          onClear={() => handleFilterChange("state", "")}
+        />
+      ) : null}
 
       <div className="mb-6 space-y-4">
         <StrainSearchBar

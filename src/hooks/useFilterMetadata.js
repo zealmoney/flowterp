@@ -7,6 +7,7 @@ export function useFilterMetadata() {
     effects: [],
     terpenes: [],
     strain_types: [],
+    time_of_day_options: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

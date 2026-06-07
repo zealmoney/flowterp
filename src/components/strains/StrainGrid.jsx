@@ -1,4 +1,7 @@
+import { useFeedback } from "../../hooks/useFeedback";
 import StrainCard from "./StrainCard";
+import { useAuth } from "../../hooks/useAuth";
+
 
 function EmptyState({ hasActiveFilters, onClearFilters }) {
   return (
@@ -46,6 +49,27 @@ export default function StrainGrid({
   hasActiveFilters = false,
   onClearFilters,
 }) {
+
+  const { isAuthenticated } = useAuth();
+
+  const feedbackFilters = {
+    state: "global",
+    effect: "",
+    terpene: "",
+    time_of_day: "",
+    strain_type: "",
+    featured: false,
+    min_thc: "",
+    max_thc: "",
+    mode: "global",
+  };
+
+  const {
+    sendFeedback,
+    getFeedbackForStrain,
+    isSavingFeedback,
+  } = useFeedback(feedbackFilters, isAuthenticated);
+
   if (loading) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-zinc-400">
@@ -74,7 +98,13 @@ export default function StrainGrid({
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
       {strains.map((strain) => (
-        <StrainCard key={strain.id} strain={strain} />
+        <StrainCard
+          strain={strain}
+          filters={feedbackFilters}
+          sendFeedback={sendFeedback}
+          getFeedbackForStrain={getFeedbackForStrain}
+          isSavingFeedback={isSavingFeedback}
+        />
       ))}
     </div>
   );

@@ -29,6 +29,13 @@ export default function ResultsSummaryBar({ filters, metadata, count = 0, loadin
     parts.push(`featuring ${getLabel(metadata?.terpenes, filters.terpene).toLowerCase()}`);
   }
 
+  if (filters.time_of_day) {
+    const timeLabel =
+      metadata?.time_of_day_options?.find((item) => item.value === filters.time_of_day)?.label ||
+      filters.time_of_day;
+    parts.push(`best for ${timeLabel.toLowerCase()}`);
+  }
+
   const orderingMap = {
     name: "sorted by Name (A–Z)",
     "-name": "sorted by Name (Z–A)",
@@ -48,9 +55,7 @@ export default function ResultsSummaryBar({ filters, metadata, count = 0, loadin
   return (
     <div className="mb-5 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm text-zinc-300">
-          {summaryText}
-        </p>
+        <p className="text-sm text-zinc-300">{summaryText}</p>
 
         <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
           <span>{loading ? "Updating results..." : `${count} result${count === 1 ? "" : "s"}`}</span>
